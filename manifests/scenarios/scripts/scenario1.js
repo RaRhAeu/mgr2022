@@ -9,7 +9,7 @@ export const options = {
 };
 
 export default function () {
-  const result = http.get('https://test-api.k6.io/public/crocodiles/');
+  const result = http.get('http://app-server/s1');
   check(result, {
     'http response status code is 200': result.status === 200,
   });
