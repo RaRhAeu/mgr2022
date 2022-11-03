@@ -1,0 +1,2 @@
+record PasswordDTO(String password) {
+}
