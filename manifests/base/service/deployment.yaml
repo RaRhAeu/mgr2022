@@ -49,4 +49,3 @@ spec:
             runAsUser: 1000
             runAsNonRoot: true
             runAsGroup: 1000
-      serviceAccountName: app-server

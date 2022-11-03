@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    postgres.kubernetes.io/name: postgres-server
+    postgres.kubernetes.io/component: server
+  name: postgres-server
+spec:
+  selector:
+    matchLabels:
+      postgres.kubernetes.io/name: postgres-server
+  template:
+    metadata:
+      labels:
+        postgres.kubernetes.io/name: postgres-server
+    spec:
+      containers:
+        - image: postgres:12
+          name: postgres
+          resources:
+            requests:
+              memory: "128Mi"
+              cpu: "100m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          ports:
+            - containerPort: 5432
+              name: tcp
+              protocol: TCP
