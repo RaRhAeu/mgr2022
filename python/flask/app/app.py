@@ -3,7 +3,8 @@ import requests
 import gevent
 import bcrypt
 from flask import Flask, jsonify, request
-from .schemas import UserPasswordModel
+
+from app.schemas import UserPasswordModel
 
 app = Flask(__name__)
 
