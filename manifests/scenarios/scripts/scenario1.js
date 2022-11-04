@@ -8,7 +8,12 @@ export const options = {
 };
 
 export default function () {
-  const result = http.get('http://app-server:8000/s1');
+    const params = {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  };
+  const result = http.get('http://app-server:8000/s1', params);
   check(result, {
     'http response status code is 200': result.status === 200,
   });
