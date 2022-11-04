@@ -1,0 +1,2 @@
+record StatusDTO(String status) {
+}
