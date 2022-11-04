@@ -36,7 +36,7 @@ public class Resource {
     @GET()
     @Produces(MediaType.APPLICATION_JSON)
     public Response firstScenario() {
-        return Response.status(200).entity("OK").build();
+        return Response.status(200).entity(new StatusDTO("ok")).build();
     }
 
     @Path("/s2")
@@ -74,7 +74,7 @@ public class Resource {
         Map<String, Object> objectMap = new HashMap<>();
         ExecutorService service = Executors.newCachedThreadPool();
         List<Callable<Pair<String, Object>>> tasks = new ArrayList<>();
-        tasks.add(() -> Pair.create("s1", "ok"));
+        tasks.add(() -> Pair.create("s1", new StatusDTO("ok")));
         tasks.add(() -> Pair.create("s2", this.simulateAction()));
         tasks.add(() -> Pair.create("s3", this.createHashedPassword(new PasswordDTO("some-user-password"))));
         List<Future<Pair<String, Object>>> futures = service.invokeAll(tasks);
@@ -95,7 +95,7 @@ public class Resource {
                 data = rs.getString(1);
             }
         }
-        return data;
+        return new StatusDTO("ok");
     }
 
 }
