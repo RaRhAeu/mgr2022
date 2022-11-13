@@ -133,7 +133,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Virtual Users",
+          "title": "Liczba wirtualnych użytkowników",
           "tooltip": {
             "shared": true,
             "sort": 0,
@@ -242,7 +242,7 @@
           "thresholds": [],
           "timeFrom": null,
           "timeShift": null,
-          "title": "Requests per Second",
+          "title": "Liczba zapytań na sekundę",
           "tooltip": {
             "shared": true,
             "sort": 0,
