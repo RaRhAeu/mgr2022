@@ -3,9 +3,9 @@ import { check } from 'k6';
 
 export const options = {
   stages: [
-    { duration: '10s', target: 50 }, // simulate ramp-up of traffic from 1 to 100 users over 5 minutes.
-    { duration: '30s', target: 50 }, // stay at 100 users for 10 minutes
-    { duration: '10s', target: 0 }, // ramp-down to 0 users
+    { duration: '10s', target: 50 },
+    { duration: '30s', target: 50 },
+    { duration: '10s', target: 0 },
   ],
 };
 
