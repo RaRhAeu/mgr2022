@@ -13,5 +13,4 @@ class DB:
     async def fetch_row(self, query: str):
         async with self._pool.acquire() as connection:
             # async with connection.transaction():
-            result = await connection.fechrow(query)
-            return result
+            await connection.execute(query)

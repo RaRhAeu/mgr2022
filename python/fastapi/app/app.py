@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from aiohttp import ClientSession
 from fastapi.responses import ORJSONResponse
 
-from .db import DB
-from .schemas import UserPasswordModel
+from app.db import DB
+from app.schemas import UserPasswordModel
 
 app = FastAPI(title="Python API")
 
@@ -58,11 +58,11 @@ async def get_aggregated_response():
             _get_scenario_response(session, "POST", scenario="s3", json={"password": "test-password"}),
         ]
         results = await asyncio.gather(*tasks)
-    return ORJSONResponse({**results[0], **results[1], **results[3]})
+    return ORJSONResponse({**results[0], **results[1], **results[2]})
 
 
 async def _get_scenario_response(session: ClientSession, method, scenario, **kwargs):
-    async with session.request(method, url=f"http://app-server/{scenario}", **kwargs) as response:
+    async with session.request(method, url=f"http://app-server:8000/{scenario}", **kwargs) as response:
         assert response.status == 200
         data = await response.json()
         return data
