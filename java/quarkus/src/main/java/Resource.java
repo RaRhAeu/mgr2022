@@ -11,6 +11,8 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -89,10 +91,12 @@ public class Resource {
     }
 
     private Object simulateAction() throws SQLException {
-        Object data = null;
-        try (ResultSet rs = this.agroalDataSource.getConnection().prepareStatement("SELECT pg_sleep(0.5)").executeQuery()) {
-            while (rs.next()) {
-                data = rs.getString(1);
+        try(Connection connection = this.agroalDataSource.getConnection()) {
+            try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT pg_sleep(0.5)")) {
+                try(ResultSet rs = preparedStatement.executeQuery()) {
+                    while (rs.next()) {
+                    }
+                }
             }
         }
         return new StatusDTO("ok");
