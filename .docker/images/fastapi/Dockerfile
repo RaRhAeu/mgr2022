@@ -26,4 +26,5 @@ RUN pip install -r ./requirements.txt
 
 COPY ./python/fastapi/app ./app
 
-CMD ["uvicorn", "app.asgi:app", "--host", "0.0.0.0", "--port", "8000", "--loop", "uvloop", "--http", "h11", "--log-level", "info"]
+#CMD ["uvicorn", "app.asgi:app", "--host", "0.0.0.0", "--port", "8000", "--loop", "uvloop", "--http", "h11", "--log-level", "info"]
+CMD ["gunicorn", "app.asgi:app", "--workers", "9", "--worker-class", "uvicorn.workers.UvicornWorker", "--timeout", "120", "--log-level", "info", "--bind", "0.0.0.0:8000"]
