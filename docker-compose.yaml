@@ -71,5 +71,7 @@ services:
       - influxdb
     environment:
       - K6_OUT=influxdb=http://influxdb:8086/k6
+      - K6_INFLUXDB_PUSH_INTERVAL=0.1s
+      - K6_INFLUXDB_PAYLOAD_SIZE=50000000
     volumes:
       - ./manifests/scenarios/scripts:/scripts
