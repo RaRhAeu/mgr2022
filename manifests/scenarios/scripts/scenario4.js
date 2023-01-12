@@ -10,7 +10,7 @@ export const options = {
 };
 
 export default function () {
-  const result = http.get('http://app-server:8000/s5');
+  const result = http.get('http://app-server:8000/s4');
   check(result, {
     'http response status code is 200': result.status === 200,
   });

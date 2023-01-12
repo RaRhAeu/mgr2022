@@ -48,24 +48,22 @@ public class Resource {
     }
 
     @Post("/s3")
-    public HttpResponse<String> thirdScenario(@Body PasswordDTO passwordDTO) {
-        return HttpResponse.ok(Password.hash(passwordDTO.password()).withBcrypt().getResult());
+    public HttpResponse<PasswordDTO> thirdScenario(@Body PasswordDTO passwordDTO) {
+        return HttpResponse.ok(createdHashedPassword(passwordDTO));
     }
 
-    @Post("/s4")
-    public HttpResponse<Object> fourthScenario() {
-        // TODO not ready yet
-        return HttpResponse.ok();
+    private PasswordDTO createdHashedPassword(PasswordDTO passwordDTO) {
+        return new PasswordDTO(Password.hash(passwordDTO.password()).withBcrypt().getResult());
     }
 
-    @Get("/s5")
-    public HttpResponse<String> fifthScenario() throws InterruptedException, JsonProcessingException {
+    @Get("/s4")
+    public HttpResponse<String> fourthScenario() throws InterruptedException, JsonProcessingException {
         Map<String, Object> objectMap = new HashMap<>();
         ExecutorService service = Executors.newCachedThreadPool();
         List<Callable<Pair<String, Object>>> tasks = new ArrayList<>();
         tasks.add(() -> Pair.create("s1", new StatusDTO("ok")));
         tasks.add(() -> Pair.create("s2", this.simulateAction()));
-        tasks.add(() -> Pair.create("s3", Password.hash("some-user-password").withBcrypt().getResult()));
+        tasks.add(() -> Pair.create("s3", createdHashedPassword(new PasswordDTO("some-user-password"))));
         List<Future<Pair<String, Object>>> futures = service.invokeAll(tasks);
         futures.forEach(it -> {
             try {
@@ -76,7 +74,6 @@ public class Resource {
         });
         return HttpResponse.ok(objectMapper.writeValueAsString(objectMap));
     }
-
 
     private StatusDTO simulateAction() throws SQLException {
         try (Connection connection = this.dataSource.getConnection()) {
