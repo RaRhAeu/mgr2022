@@ -10,7 +10,10 @@ class DB:
     async def connect(self):
         self._pool = await asyncpg.create_pool(**self.params)
 
-    async def fetch_row(self, query: str):
+    async def execute(self, query: str):
         async with self._pool.acquire() as connection:
             # async with connection.transaction():
             await connection.execute(query)
+
+    async def disconnect(self):
+        await self._pool.close()
