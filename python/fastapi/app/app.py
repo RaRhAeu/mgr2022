@@ -21,6 +21,11 @@ async def connect_db():
     await db.connect()
 
 
+@app.on_event("shutdown")
+async def disconnect_db():
+    await db.disconnect()
+
+
 @app.get("/s1")
 def get_simple_response():
     return default_response
@@ -29,7 +34,7 @@ def get_simple_response():
 @app.get("/s2")
 async def get_response_from_db():
     """SELECT pg_sleep(1):"""
-    await db.fetch_row("SELECT pg_sleep(0.5)")
+    await db.execute("SELECT pg_sleep(0.5)")
     return default_response
 
 

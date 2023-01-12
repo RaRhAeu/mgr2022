@@ -7,6 +7,9 @@ tasks:
   build_fastapi:
     cmds:
       - docker build --no-cache -f ./.docker/images/fastapi/Dockerfile -t localhost:5005/fastapi-app .
+  build_flask:
+    cmds:
+      - docker build -f ./.docker/images/flask/Dockerfile -t localhost:5005/flask-app .
   build_quarkus:
     cmds:
       - docker build --no-cache -f ./.docker/images/java/quarkus/Dockerfile -t localhost:5004/quarkus-app .
