@@ -2,9 +2,12 @@ import base64
 import requests
 import gevent
 import bcrypt
+import atexit
+
 from flask import Flask, jsonify, request
 
 from app.schemas import UserPasswordModel
+from app.db import db_session
 
 app = Flask(__name__)
 
@@ -18,6 +21,9 @@ def get_simple_response():
 @app.get("/s2")
 def get_response_from_db():
     """SELECT pg_sleep(1):"""
+    with db_session() as session:
+        session.execute("SELECT pg_sleep(0.5)")
+    return jsonify({"status": "ok"})
 
 
 @app.get("/s3")

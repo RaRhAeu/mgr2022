@@ -10,7 +10,8 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR $WORKDIR
 
-RUN apt update && apt install -y gcc libev-dev libpq-dev
+
+RUN apt update && apt install -y gcc libpq-dev && apt clean && rm -rf /var/lib/apt/lists/*
 
 RUN adduser -u $USER_UID --disabled-password --gecos "" $USERNAME && chown -R $USERNAME $WORKDIR
 USER $USERNAME
@@ -24,4 +25,4 @@ RUN pip install -r ./requirements.txt
 
 COPY ./python/flask/app ./app
 
-CMD ["python", "./app/wsgi.py"]
+CMD ["gunicorn", "app.wsgi:app", "--workers", "4", "--worker-class", "gthread", "--threads", "50", "--timeout", "120", "--log-level", "info", "--bind", "0.0.0.0:8000"]
