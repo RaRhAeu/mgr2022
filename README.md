@@ -17,7 +17,7 @@ docker-compose run k6 run /scripts/scenario{NUM}.js
 ```shell
 docker login
 
-docker build --no-cache -f ./.docker/images/{language}/{app}/Dockerfile -t rarhaeu/mgr2022:{app}-app .
+docker build --no-cache -f ./.docker/images/{framework}/Dockerfile -t rarhaeu/mgr2022:{framework}-app .
 
-docker push rarhaeu/mgr2022:{app}
+docker push rarhaeu/mgr2022:{framework}-app
 ```
