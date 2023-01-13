@@ -1,0 +1,36 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  labels:
+    postgres.kubernetes.io/name: k6-job
+    postgres.kubernetes.io/component: job
+  name: k6-job
+  namespace: test
+spec:
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: k6
+        app.kubernetes.io/component: worker
+    spec:
+      containers:
+        - name: k6
+          image: loadimpact/k6:latest
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - k6 run /scenario.js
+          env:
+            - name: K6_OUT
+              value: influxdb=http://influxdb:8086/k6
+          volumeMounts:
+            - mountPath: /scenario.js
+              name: scenario-volume
+
+      volumes:
+        - name: scenario-volume
+          configMap:
+            name: scenario-cm
+
+      restartPolicy: Never

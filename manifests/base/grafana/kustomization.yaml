@@ -1,0 +1,22 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: test
+
+resources:
+  - deployment.yaml
+  - service.yaml
+
+
+configMapGenerator:
+  - envs:
+    - config.env
+    name: grafana-cm
+  - files:
+    - ../../../dashboards/results.json
+    name: results-cm
+  - files:
+      - ./datasource.yaml
+    name: datasource-cm
+  - files:
+      - ../../../grafana-dashboard.yaml
+    name: dashboard-cm

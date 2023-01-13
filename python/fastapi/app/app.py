@@ -1,5 +1,7 @@
 import asyncio
 import base64
+import os
+
 import bcrypt
 
 from fastapi import FastAPI
@@ -11,7 +13,7 @@ from app.schemas import UserPasswordModel
 
 app = FastAPI(title="Python API")
 
-db = DB(dsn="postgres://postgres:postgres@postgres:5432/postgres")
+db = DB(dsn=os.getenv("DB_URL", "postgres://postgres:postgres@postgres:5432/postgres"))
 
 default_response = ORJSONResponse({"status": "ok"})
 
@@ -47,12 +49,7 @@ async def encrypt_user_password(model: UserPasswordModel):
     return ORJSONResponse({"password": base_hash.decode("utf-8")})
 
 
-@app.post("/s4")
-async def parse_complex_json():
-    pass
-
-
-@app.get("/s5")
+@app.get("/s4")
 async def get_aggregated_response():
     """Return aggregated responses from s1,s2,s3"""
 

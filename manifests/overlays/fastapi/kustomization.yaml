@@ -4,9 +4,10 @@ kind: Kustomization
 namespace: default
 
 resources:
-  - ../../../base
+  - ../../base/service
 
 
 images:
   - name: app
-    newName: localhost:5005/flask-app
+    newName: rarhaeu/mgr2022
+    newTag: fastapi-app

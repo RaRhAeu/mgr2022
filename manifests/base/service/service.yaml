@@ -5,11 +5,12 @@ metadata:
     app.kubernetes.io/name: app-server
     app.kubernetes.io/component: server
   name: app-server
+  namespace: test
 spec:
   ports:
     - name: http
       protocol: TCP
-      port: 80
+      port: 8000
       targetPort: 8000
   selector:
     app.kubernetes.io/name: app-server

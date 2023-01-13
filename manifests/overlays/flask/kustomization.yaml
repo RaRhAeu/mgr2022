@@ -4,9 +4,9 @@ kind: Kustomization
 namespace: default
 
 resources:
-  - ../../../base
+  - ../../base
 
 
 images:
   - name: app
-    newName: localhost:5005/fastapi-app
+    newName: ... # TODO: registry url
