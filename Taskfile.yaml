@@ -12,7 +12,10 @@ tasks:
       - docker build -f ./.docker/images/flask/Dockerfile -t localhost:5005/flask-app .
   build_quarkus:
     cmds:
-      - docker build --no-cache -f ./.docker/images/java/quarkus/Dockerfile -t localhost:5004/quarkus-app .
+      - docker build --no-cache -f ./.docker/images/quarkus/Dockerfile -t localhost:5005/quarkus-app .
+  build_micronaut:
+    cmds:
+      - docker build --no-cache -f ./.docker/images/micronaut/Dockerfile -t localhost:5005/micronaut-app .
   run-tests:
     cmds:
       - docker-compose run k6 run {{.CLI_ARGS}}

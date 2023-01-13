@@ -2,6 +2,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.agroal.api.AgroalDataSource;
 import org.graalvm.collections.Pair;
+import com.password4j.Password;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -57,22 +58,13 @@ public class Resource {
     }
 
     private PasswordDTO createHashedPassword(PasswordDTO dto) {
-        return new PasswordDTO(BCrypt.hashpw(dto.password(), "$2a$12$R9h/cIPz0gi.URNNX3kh2O"));
+        return new PasswordDTO(Password.hash(dto.password()).withBcrypt().getResult());
     }
 
     @Path("/s4")
-    @POST()
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response fourthScenario(PasswordDTO dto) {
-        //TODO not ready yet
-        return Response.status(200).build();
-    }
-
-    @Path("/s5")
     @GET()
     @Produces(MediaType.APPLICATION_JSON)
-    public Response fifthScenario() throws InterruptedException, JsonProcessingException {
+    public Response fourthScenario() throws InterruptedException, JsonProcessingException {
         Map<String, Object> objectMap = new HashMap<>();
         ExecutorService service = Executors.newCachedThreadPool();
         List<Callable<Pair<String, Object>>> tasks = new ArrayList<>();
