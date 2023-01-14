@@ -3,10 +3,9 @@ version: "3.8"
 x-env: &env
   TERM: "xterm-256color"
   ENV: DEV
-  DB_URL: postgres://postgres:postgres@postgres:5432/postgres
 
 x-base-image: &APP_BASE_IMAGE
-  localhost:5005/fastapi-app
+  localhost:5005/flask-app
 
 services:
   postgres:
