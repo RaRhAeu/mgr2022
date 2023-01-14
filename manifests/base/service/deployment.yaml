@@ -15,6 +15,16 @@ spec:
       labels:
         app.kubernetes.io/name: app-server
     spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/part-of
+                    operator: In
+                    values:
+                      - testing
       containers:
         - image: app
           name: app

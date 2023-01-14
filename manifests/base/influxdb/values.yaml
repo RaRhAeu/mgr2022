@@ -1,3 +1,7 @@
+
+podLabels:
+  app.kubernetes.io/part-of: testing
+
 env:
  - name: INFLUXDB_DB
    value: "k6"

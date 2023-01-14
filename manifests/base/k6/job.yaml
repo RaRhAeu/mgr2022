@@ -12,6 +12,7 @@ spec:
       labels:
         app.kubernetes.io/name: k6
         app.kubernetes.io/component: worker
+        app.kubernetes.io/part-of: testing
     spec:
       containers:
         - name: k6
