@@ -1,3 +1,4 @@
+import os
 from contextlib import contextmanager
 
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -6,7 +7,7 @@ from sqlalchemy.pool import QueuePool
 
 
 engine = create_engine(
-    "postgresql+psycopg2://postgres:postgres@postgres:5432/postgres",
+    os.getenv("DB_URL", "postgresql+psycopg2://postgres:postgres@postgres:5432/postgres"),
     poolclass=QueuePool,
     pool_size=10,
     max_overflow=0,

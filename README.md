@@ -11,3 +11,13 @@ docker-compose up --force-recreate --remove-orphans -V grafana app-server
 # NUM = 1..5
 docker-compose run k6 run /scripts/scenario{NUM}.js
 ```
+
+## Pushing app image
+
+```shell
+docker login
+
+docker build --no-cache -f ./.docker/images/{framework}/Dockerfile -t rarhaeu/mgr2022:{framework}-app .
+
+docker push rarhaeu/mgr2022:{framework}-app
+```

@@ -2,21 +2,25 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    postgres.kubernetes.io/name: postgres-server
-    postgres.kubernetes.io/component: server
+    app.kubernetes.io/name: postgres-server
+    app.kubernetes.io/component: server
   name: postgres-server
+  namespace: test
 spec:
   selector:
     matchLabels:
-      postgres.kubernetes.io/name: postgres-server
+      app.kubernetes.io/name: postgres-server
   template:
     metadata:
       labels:
-        postgres.kubernetes.io/name: postgres-server
+        app.kubernetes.io/name: postgres-server
     spec:
       containers:
         - image: postgres:12
           name: postgres
+          envFrom:
+            - configMapRef:
+                name: postgres-cm
           resources:
             requests:
               memory: "128Mi"

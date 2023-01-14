@@ -5,6 +5,7 @@ metadata:
     app.kubernetes.io/name: app-server
     app.kubernetes.io/component: server
   name: app-server
+  namespace: test
 spec:
   selector:
     matchLabels:
@@ -31,7 +32,7 @@ spec:
           livenessProbe:
             httpGet:
               port: http
-              path: /healthz
+              path: /s1
             failureThreshold: 3
             timeoutSeconds: 1
             periodSeconds: 10
@@ -40,7 +41,7 @@ spec:
           readinessProbe:
             httpGet:
               port: http
-              path: /healthz
+              path: /s1
             failureThreshold: 1
             timeoutSeconds: 1
             periodSeconds: 10
