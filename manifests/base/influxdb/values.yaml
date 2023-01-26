@@ -2,6 +2,26 @@
 podLabels:
   app.kubernetes.io/part-of: testing
 
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - topologyKey: kubernetes.io/hostname
+        labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - app-server
+
+resources:
+  requests:
+    memory: 2Gi
+    cpu: "2"
+  limits:
+    memory: 8Gi
+    cpu: "4"
+
 env:
  - name: INFLUXDB_DB
    value: "k6"

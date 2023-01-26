@@ -21,14 +21,23 @@ spec:
             - /bin/sh
             - -c
           args:
-            - k6 run /scenario.js
-          env:
-            - name: K6_OUT
-              value: influxdb=http://influxdb:8086/k6
+            - k6 run /scenarios/script.js
+          envFrom:
+            - configMapRef:
+                name: k6-cm
           volumeMounts:
-            - mountPath: /scenario.js
+            - mountPath: /scenarios
               name: scenario-volume
-
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - app-server
       volumes:
         - name: scenario-volume
           configMap:

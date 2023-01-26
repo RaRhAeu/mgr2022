@@ -19,3 +19,10 @@ tasks:
   run-tests:
     cmds:
       - docker-compose run k6 run {{.CLI_ARGS}}
+  deploy:
+    cmds:
+      - kustomize build --load-restrictor LoadRestrictionsNone ./manifests/overlays/{{.CLI_ARGS}} | kubectl apply -f -
+  test:
+    cmds:
+      - kubectl delete jobs/k6-job || true
+      - kustomize build --load-restrictor LoadRestrictionsNone ./manifests/overlays/scenarios/{{.CLI_ARGS}} | kubectl apply -f -
