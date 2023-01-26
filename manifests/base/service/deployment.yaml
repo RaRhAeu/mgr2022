@@ -7,6 +7,7 @@ metadata:
   name: app-server
   namespace: test
 spec:
+  replicas: 1  # 3
   selector:
     matchLabels:
       app.kubernetes.io/name: app-server
@@ -25,16 +26,26 @@ spec:
                     operator: In
                     values:
                       - testing
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                topologyKey: kubernetes.io/hostname
+                labelSelector:
+                  matchExpressions:
+                    - key: app.kubernetes.io/name
+                      operator: In
+                      values:
+                        - app-server
+              weight: 100
       containers:
         - image: app
           name: app
           resources:
             requests:
-              memory: "128Mi"
-              cpu: "100m"
+              memory: "500Mi"
+              cpu: "1"
             limits:
-              memory: "1Gi"
-              cpu: "1000m"
+              memory: "2Gi"
+              cpu: "4"
           ports:
             - containerPort: 8000
               name: http
@@ -44,8 +55,8 @@ spec:
               port: http
               path: /s1
             failureThreshold: 3
-            timeoutSeconds: 1
-            periodSeconds: 10
+            timeoutSeconds: 10
+            periodSeconds: 30
             initialDelaySeconds: 10
             successThreshold: 1
           readinessProbe:
@@ -60,3 +71,4 @@ spec:
             runAsUser: 1000
             runAsNonRoot: true
             runAsGroup: 1000
+          imagePullPolicy: IfNotPresent

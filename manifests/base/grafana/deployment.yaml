@@ -31,6 +31,17 @@ spec:
               name: datasource-vm
             - mountPath: /var/lib/grafana/dashboards
               name: results-vm
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - app-server
+
       volumes:
         - name: dashboard-vm
           configMap:

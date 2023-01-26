@@ -5,7 +5,7 @@ x-env: &env
   ENV: DEV
 
 x-base-image: &APP_BASE_IMAGE
-  localhost:5005/flask-app
+  arekk41051/mgr2022:micronaut-app
 
 services:
   postgres:
@@ -73,4 +73,4 @@ services:
       - K6_INFLUXDB_PUSH_INTERVAL=0.1s
       - K6_INFLUXDB_PAYLOAD_SIZE=50000000
     volumes:
-      - ./scenarios/scripts:/scripts
+      - ./manifests/overlays/scenarios:/scripts

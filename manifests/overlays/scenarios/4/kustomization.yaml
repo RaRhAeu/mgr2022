@@ -6,9 +6,9 @@ resources:
   - ../../../base/k6
 
 configMapGenerator:
-  - envs:
+  - files:
       - script.js
     name: scenario-cm
 
 commonAnnotations:
-  scenario: "4"
+  scenario: "3"

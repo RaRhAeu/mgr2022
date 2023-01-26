@@ -3,12 +3,9 @@ kind: Kustomization
 namespace: test
 
 resources:
-  - ../../../base/k6
+  - job.yaml
 
 configMapGenerator:
-  - files:
-      - script.js
-    name: scenario-cm
-
-commonAnnotations:
-  scenario: "3"
+  - envs:
+    - config.env
+    name: k6-cm

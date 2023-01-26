@@ -41,7 +41,7 @@ async def get_response_from_db():
 
 
 @app.post("/s3")
-async def encrypt_user_password(model: UserPasswordModel):
+def encrypt_user_password(model: UserPasswordModel):
     """Bcrypt 12 iterations"""
     salt = bcrypt.gensalt(rounds=12)
     _hash = bcrypt.hashpw(model.password.encode("utf-8"), salt)
