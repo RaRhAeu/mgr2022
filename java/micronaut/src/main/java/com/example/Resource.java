@@ -48,14 +48,14 @@ public class Resource {
     public Mono<HttpResponse<String>> fourthScenario() {
         Map<String, Object> objectMap = new ConcurrentHashMap<>();
         return Mono.zip(
-                Mono.just(Pair.create("s1", new StatusDTO("ok"))),
-                Mono.just(Pair.create("s2", this.simulateAction())),
-                Mono.just(Pair.create("s3", createdHashedPassword(new PasswordDTO("some-user-password"))))
+                Mono.just(new StatusDTO("ok")),
+                this.simulateAction(),
+                createdHashedPassword(new PasswordDTO("some-user-password"))
                 ).map(tuple ->
                 {
-                    objectMap.put(tuple.getT1().getLeft(), tuple.getT1().getRight());
-                    objectMap.put(tuple.getT2().getLeft(), tuple.getT2().getRight());
-                    objectMap.put(tuple.getT3().getLeft(), tuple.getT3().getRight());
+                    objectMap.put("s1", tuple.getT1());
+                    objectMap.put("s2", tuple.getT2());
+                    objectMap.put("s3", tuple.getT3());
                     return objectMap;
                 }
         ).mapNotNull(it -> {
