@@ -12,4 +12,10 @@ datasources:
     url: jdbc:postgresql://postgres:5432/postgres
     username: postgres
     password: postgres
-    driverClassName: org.postgresql.Driver
+r2dbc:
+  datasources:
+    default:
+      url: r2dbc:postgresql://postgres:5432/postgres
+      username: postgres
+      password: postgres
+

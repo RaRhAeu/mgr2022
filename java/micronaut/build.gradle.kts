@@ -13,13 +13,16 @@ repositories {
 dependencies {
     annotationProcessor("io.micronaut:micronaut-http-validation")
     implementation("io.micronaut:micronaut-http-server-netty:3.8.0")
+    implementation("io.micronaut.reactor:micronaut-reactor")
+    implementation("io.micronaut.reactor:micronaut-reactor-http-client")
     implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.data:micronaut-data-r2dbc:3.6.0")
     implementation("jakarta.annotation:jakarta.annotation-api")
     implementation("io.micronaut:micronaut-validation")
     implementation ("com.password4j:password4j:1.6.3")
-    runtimeOnly("org.postgresql:postgresql:42.5.1")
-    runtimeOnly("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.r2dbc:r2dbc-postgresql:0.8.13.RELEASE")
 
+    runtimeOnly("io.r2dbc:r2dbc-pool")
     runtimeOnly("org.slf4j:slf4j-simple:2.0.6")
 }
 
