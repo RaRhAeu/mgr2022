@@ -7,7 +7,7 @@ metadata:
   name: app-server
   namespace: test
 spec:
-  replicas: 1  # 3
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: app-server
@@ -26,16 +26,10 @@ spec:
                     operator: In
                     values:
                       - testing
-          preferredDuringSchedulingIgnoredDuringExecution:
-            - podAffinityTerm:
-                topologyKey: kubernetes.io/hostname
-                labelSelector:
-                  matchExpressions:
-                    - key: app.kubernetes.io/name
-                      operator: In
-                      values:
-                        - app-server
-              weight: 100
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - app-server
       containers:
         - image: app
           name: app

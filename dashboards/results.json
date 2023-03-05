@@ -1239,7 +1239,7 @@
               "tags": []
             }
           ],
-          "title": "$Measurement (over time)",
+          "title": "$Measurement (w czasie)",
           "tooltip": {
             "show": true,
             "showHistogram": true
