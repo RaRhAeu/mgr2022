@@ -6,7 +6,7 @@ vars:
 tasks:
   build_fastapi:
     cmds:
-      - docker build --no-cache -f ./.docker/images/fastapi/Dockerfile -t localhost:5005/fastapi-app .
+      - docker build -f ./.docker/images/fastapi/Dockerfile -t localhost:5005/fastapi-app .
   build_flask:
     cmds:
       - docker build -f ./.docker/images/flask/Dockerfile -t localhost:5005/flask-app .

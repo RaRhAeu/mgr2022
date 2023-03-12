@@ -1,6 +1,5 @@
 import asyncio
 import base64
-import os
 
 import bcrypt
 
@@ -8,24 +7,22 @@ from fastapi import FastAPI
 from aiohttp import ClientSession
 from fastapi.responses import ORJSONResponse
 
-from app.db import DB
 from app.schemas import UserPasswordModel
+from sqlalchemy import text
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
+from sqlalchemy.pool import AsyncAdaptedQueuePool
 
 app = FastAPI(title="Python API")
 
-db = DB(dsn=os.getenv("DB_URL", "postgres://postgres:postgres@postgres:5432/postgres"))
+engine = create_async_engine("postgresql+asyncpg://postgres:postgres@postgres:5432/postgres", echo_pool=True,
+                             echo=True,
+                             pool_size=10, max_overflow=0, poolclass=AsyncAdaptedQueuePool)
+
+async_session = async_sessionmaker(engine, expire_on_commit=False)
 
 default_response = ORJSONResponse({"status": "ok"})
 
-
-@app.on_event("startup")
-async def connect_db():
-    await db.connect()
-
-
-@app.on_event("shutdown")
-async def disconnect_db():
-    await db.disconnect()
+QUERY = text("SELECT pg_sleep(0.5)")
 
 
 @app.get("/s1")
@@ -35,8 +32,10 @@ def get_simple_response():
 
 @app.get("/s2")
 async def get_response_from_db():
-    """SELECT pg_sleep(1):"""
-    await db.execute("SELECT pg_sleep(0.5)")
+    """SELECT pg_sleep(0.5):"""
+    async with async_session() as session:
+        await session.execute(QUERY)
+        await session.commit()
     return default_response
 
 
