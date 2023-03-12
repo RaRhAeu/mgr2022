@@ -3,13 +3,23 @@ import requests
 import bcrypt
 from flask import Flask, jsonify, request
 from concurrent.futures import ThreadPoolExecutor, as_completed
+from sqlalchemy import create_engine, QueuePool, text
+from sqlalchemy.orm import sessionmaker
+
 
 from pydantic import ValidationError
 
 from app.schemas import UserPasswordModel
-from app.db import db_session
 
 app = Flask(__name__)
+
+
+engine = create_engine("postgresql+psycopg2://postgres:postgres@postgres:5432/postgres", echo_pool=True, echo=True,
+                       pool_size=10, max_overflow=0, poolclass=QueuePool)
+
+session_maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+QUERY = text("SELECT pg_sleep(0.5)")
 
 
 @app.get("/s1")
@@ -21,8 +31,9 @@ def get_simple_response():
 @app.get("/s2")
 def get_response_from_db():
     """SELECT pg_sleep(1):"""
-    with db_session() as session:
-        session.execute("SELECT pg_sleep(0.5)")
+    with session_maker() as session:
+        session.execute(QUERY)
+        session.commit()
     return jsonify({"status": "ok"})
 
 

@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "api"
+version = "0.1.0"
+description = ""
+authors = ["Radzim Kowalow <radzim_ko@wp.pl>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+sqlalchemy = {extras = ["asyncio"], version = "^2.0.5.post1"}
+asyncpg = "^0.27.0"
+fastapi = "^0.94.0"
+orjson = "^3.8.7"
+uvicorn = "^0.21.0"
+uvloop = "^0.17.0"
+aiohttp = "^3.8.4"
+bcrypt = "^4.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
