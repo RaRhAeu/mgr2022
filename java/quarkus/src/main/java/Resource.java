@@ -1,8 +1,6 @@
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.agroal.api.AgroalDataSource;
-import org.graalvm.collections.Pair;
 import com.password4j.Password;
+import io.agroal.api.AgroalDataSource;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -16,15 +14,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 @Path("")
 public class Resource {
@@ -38,15 +27,15 @@ public class Resource {
     @Path("/s1")
     @GET()
     @Produces(MediaType.APPLICATION_JSON)
-    public Response firstScenario() {
-        return Response.status(200).entity(new StatusDTO("ok")).build();
+    public String firstScenario() {
+        return "hello world";
     }
 
     @Path("/s2")
-    @GET
+    @GET()
     @Produces(MediaType.APPLICATION_JSON)
-    public Response secondScenario() throws SQLException {
-        return Response.status(200).entity(this.simulateAction()).build();
+    public Response secondScenario() {
+        return Response.status(200).entity(new StatusDTO("ok")).build();
     }
 
     @Path("/s3")
@@ -57,29 +46,15 @@ public class Resource {
         return Response.status(200).entity(createHashedPassword(dto)).build();
     }
 
-    private PasswordDTO createHashedPassword(PasswordDTO dto) {
-        return new PasswordDTO(Password.hash(dto.password()).withBcrypt().getResult());
+    @Path("/s4")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response fourthScenario() throws SQLException {
+        return Response.status(200).entity(this.simulateAction()).build();
     }
 
-    @Path("/s4")
-    @GET()
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response fourthScenario() throws InterruptedException, JsonProcessingException {
-        Map<String, Object> objectMap = new HashMap<>();
-        ExecutorService service = Executors.newCachedThreadPool();
-        List<Callable<Pair<String, Object>>> tasks = new ArrayList<>();
-        tasks.add(() -> Pair.create("s1", new StatusDTO("ok")));
-        tasks.add(() -> Pair.create("s2", this.simulateAction()));
-        tasks.add(() -> Pair.create("s3", this.createHashedPassword(new PasswordDTO("some-user-password"))));
-        List<Future<Pair<String, Object>>> futures = service.invokeAll(tasks);
-        futures.forEach(it -> {
-            try {
-                objectMap.put(it.get().getLeft(), it.get().getRight());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        });
-        return Response.status(200).entity(objectMapper.writeValueAsString(objectMap)).build();
+    private PasswordDTO createHashedPassword(PasswordDTO dto) {
+        return new PasswordDTO(Password.hash(dto.password()).withBcrypt().getResult());
     }
 
     private Object simulateAction() throws SQLException {
