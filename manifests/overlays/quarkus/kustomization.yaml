@@ -10,4 +10,4 @@ resources:
 images:
   - name: app
     newName: arekk41051/mgr2022
-    newTag: quarkus-app-async
+    newTag: quarkus-app

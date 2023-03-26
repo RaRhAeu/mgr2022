@@ -1,42 +1,54 @@
-import asyncio
+
 import base64
+import multiprocessing
 
+import asyncpg
 import bcrypt
-
+from datetime import datetime, timezone
 from fastapi import FastAPI
-from aiohttp import ClientSession
-from fastapi.responses import ORJSONResponse
+
+from fastapi.responses import ORJSONResponse, PlainTextResponse, Response
 
 from app.schemas import UserPasswordModel
-from sqlalchemy import text
-from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
-from sqlalchemy.pool import AsyncAdaptedQueuePool
 
-app = FastAPI(title="Python API")
+MAX_POOL_SIZE = 100 // multiprocessing.cpu_count()
+MIN_POOL_SIZE = max(int(MAX_POOL_SIZE / 2), 1)
 
-engine = create_async_engine("postgresql+asyncpg://postgres:postgres@postgres:5432/postgres", echo_pool=True,
-                             echo=True,
-                             pool_size=10, max_overflow=0, poolclass=AsyncAdaptedQueuePool)
 
-async_session = async_sessionmaker(engine, expire_on_commit=False)
 
-default_response = ORJSONResponse({"status": "ok"})
+async def setup_database():
+    return await asyncpg.create_pool(
+        user="postgres",
+        password="postgres",
+        database="postgres",
+        host="postgres",
+        port=5432,
+        min_size=MIN_POOL_SIZE,
+        max_size=MAX_POOL_SIZE,
+    )
 
-QUERY = text("SELECT pg_sleep(0.5)")
+app = FastAPI()
+
+
+@app.on_event("startup")
+async def connect_db():
+    app.state.connection_pool = await setup_database()
+
+
+@app.on_event("shutdown")
+async def disconnect_db():
+    await app.state.connection_pool.close()
 
 
 @app.get("/s1")
-def get_simple_response():
-    return default_response
+def get_plaintext_response():
+    return PlainTextResponse(b"Hello world")
 
 
 @app.get("/s2")
-async def get_response_from_db():
+def get_json_response():
     """SELECT pg_sleep(0.5):"""
-    async with async_session() as session:
-        await session.execute(QUERY)
-        await session.commit()
-    return default_response
+    return ORJSONResponse({"status": "ok", "now": datetime.now(tz=timezone.utc)})
 
 
 @app.post("/s3")
@@ -49,21 +61,8 @@ def encrypt_user_password(model: UserPasswordModel):
 
 
 @app.get("/s4")
-async def get_aggregated_response():
-    """Return aggregated responses from s1,s2,s3"""
-
-    async with ClientSession() as session:
-        tasks = [
-            _get_scenario_response(session, "GET", scenario="s1"),
-            _get_scenario_response(session, "GET", scenario="s2"),
-            _get_scenario_response(session, "POST", scenario="s3", json={"password": "test-password"}),
-        ]
-        results = await asyncio.gather(*tasks)
-    return ORJSONResponse({**results[0], **results[1], **results[2]})
-
-
-async def _get_scenario_response(session: ClientSession, method, scenario, **kwargs):
-    async with session.request(method, url=f"http://app-server:8000/{scenario}", **kwargs) as response:
-        assert response.status == 200
-        data = await response.json()
-        return data
+async def get_database_response():
+    """Run SELECT pg_sleep(0.5) query"""
+    async with app.state.connection_pool.acquire() as connection:
+        await connection.fetch("SELECT 1 FROM pg_sleep(0.5)")
+    return Response(status_code=200)
