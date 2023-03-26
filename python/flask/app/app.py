@@ -1,49 +1,60 @@
 import base64
-import requests
 import bcrypt
 from flask import Flask, jsonify, request
-from concurrent.futures import ThreadPoolExecutor, as_completed
-from sqlalchemy import create_engine, QueuePool, text
-from sqlalchemy.orm import sessionmaker
+from flask.json.provider import JSONProvider
+
+import multiprocessing
+from datetime import datetime, timezone
+from psycopg2.pool import ThreadedConnectionPool
+
+from app.schemas import UserPasswordModel, schema_loads, schema_dumps
 
 
-from pydantic import ValidationError
+class ORJSONProvider(JSONProvider):
 
-from app.schemas import UserPasswordModel
+    def dumps(self, obj):
+        return schema_dumps(obj)
+
+    def loads(self, obj):
+        return schema_loads(obj)
 
 app = Flask(__name__)
+app.json = ORJSONProvider(app)
 
 
-engine = create_engine("postgresql+psycopg2://postgres:postgres@postgres:5432/postgres", echo_pool=True, echo=True,
-                       pool_size=10, max_overflow=0, poolclass=QueuePool)
 
-session_maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-QUERY = text("SELECT pg_sleep(0.5)")
+query = "SELECT 1 FROM pg_sleep(0.5)"
+
+MAX_POOL_SIZE = 100 // (2 * multiprocessing.cpu_count() + 1)
+MIN_POOL_SIZE = max(int(MAX_POOL_SIZE / 2), 1)
+
+
+pool = ThreadedConnectionPool(
+    minconn=MIN_POOL_SIZE,
+    maxconn=MAX_POOL_SIZE,
+    database="postgres",
+    user="postgres",
+    password="postgres",
+    host="postgres",
+    port=5432,
+)
 
 
 @app.get("/s1")
-def get_simple_response():
-    """Return {'status'; 'ok'}"""
-    return jsonify({"status": "ok"})
+def get_plaintext_response():
+    return b"Hello, World!", {"Content-Type": "text/plain"}
 
 
 @app.get("/s2")
-def get_response_from_db():
-    """SELECT pg_sleep(1):"""
-    with session_maker() as session:
-        session.execute(QUERY)
-        session.commit()
-    return jsonify({"status": "ok"})
+def get_json_response():
+    return jsonify({"status": "ok", "now": datetime.now(tz=timezone.utc)})
 
 
 @app.post("/s3")
 def encrypt_user_password():
     """Bcrypt 12 iterations"""
-    try:
-        model = UserPasswordModel.parse_raw(request.data)
-    except ValidationError as e:
-        return jsonify(e.errors(), status=422)
+    model = UserPasswordModel.parse_raw(request.data)
     salt = bcrypt.gensalt(rounds=12)
     _hash = bcrypt.hashpw(model.password.encode("utf-8"), salt)
     base_hash = base64.b64encode(_hash)
@@ -51,24 +62,10 @@ def encrypt_user_password():
 
 
 @app.get("/s4")
-def get_aggregated_response():
-    """Return aggregated responses from s1,s2,s3"""
-    with ThreadPoolExecutor(max_workers=3) as executor:
-        with requests.Session() as session:
-            f1 = executor.submit(
-                get_service_response, session, "GET", scenario="s1",
-            )
-            f2 = executor.submit(get_service_response, session, "GET", scenario="s2")
-            f3 = executor.submit(
-                get_service_response, session, "POST", scenario="s3", json={"password": "test-password"}
-            )
-            d = {}
-            for r in as_completed((f1, f2, f3)):
-                d.update(r.result())
-    return jsonify(d)
-
-
-def get_service_response(session, method, scenario, **kwargs):
-    response = session.request(method, url=f"http://app-server:8000/{scenario}", **kwargs)
-    assert response.status_code == 200
-    return response.json()
+def get_database_response():
+    conn = pool.getconn()
+    cursor = conn.cursor()
+    cursor.execute(query)
+    cursor.fetchone()
+    pool.putconn(conn)
+    return '', 200
