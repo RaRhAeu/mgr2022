@@ -13,3 +13,6 @@ datasources:
     username: postgres
     password: postgres
     driverClassName: org.postgresql.Driver
+    maximum-pool-size: 100
+    transaction-per-operation: false
+    allow-connection-per-operation: true

@@ -14,6 +14,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 @Path("")
 public class Resource {
@@ -21,21 +23,17 @@ public class Resource {
     @Inject
     AgroalDataSource agroalDataSource;
 
-    @Inject
-    ObjectMapper objectMapper;
-
     @Path("/s1")
     @GET()
-    @Produces(MediaType.APPLICATION_JSON)
     public String firstScenario() {
-        return "hello world";
+        return "Hello, World!";
     }
 
     @Path("/s2")
     @GET()
     @Produces(MediaType.APPLICATION_JSON)
     public Response secondScenario() {
-        return Response.status(200).entity(new StatusDTO("ok")).build();
+        return Response.status(200).entity(new StatusDTO("ok", LocalDateTime.now(ZoneId.of("UTC")))).build();
     }
 
     @Path("/s3")
@@ -48,16 +46,16 @@ public class Resource {
 
     @Path("/s4")
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
     public Response fourthScenario() throws SQLException {
-        return Response.status(200).entity(this.simulateAction()).build();
+        this.simulateAction();
+        return Response.ok().build();
     }
 
     private PasswordDTO createHashedPassword(PasswordDTO dto) {
         return new PasswordDTO(Password.hash(dto.password()).withBcrypt().getResult());
     }
 
-    private Object simulateAction() throws SQLException {
+    private void simulateAction() throws SQLException {
         try(Connection connection = this.agroalDataSource.getConnection()) {
             try(PreparedStatement preparedStatement = connection.prepareStatement("SELECT pg_sleep(0.5)")) {
                 try(ResultSet rs = preparedStatement.executeQuery()) {
@@ -66,7 +64,6 @@ public class Resource {
                 }
             }
         }
-        return new StatusDTO("ok");
     }
 
 }
