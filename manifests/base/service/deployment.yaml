@@ -7,7 +7,7 @@ metadata:
   name: app-server
   namespace: test
 spec:
-  replicas: 3
+  replicas: 1
   selector:
     matchLabels:
       app.kubernetes.io/name: app-server
@@ -65,4 +65,4 @@ spec:
             runAsUser: 1000
             runAsNonRoot: true
             runAsGroup: 1000
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
